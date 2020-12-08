@@ -43,6 +43,7 @@ signals:
 private:
     void constrainGradient(QVector<StopColor> &gradient);
     void sortGradient(QVector<StopColor> &gradient);
+    void updateEndStops();
 
     StopColor *findStopHandleForEvent(QMouseEvent *e, QVector<StopColor> toExclude = QVector<StopColor>{});
 
@@ -59,6 +60,8 @@ protected:
 private:
     QVector<StopColor> _gradient;
     StopColor *dragStopColor = nullptr;
+
+    QVector<StopColor> endStops;
 
     int _handle_w{10};
     int _handle_h{10};
