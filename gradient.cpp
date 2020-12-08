@@ -155,9 +155,11 @@ void Gradient::mousePressEvent(QMouseEvent *e)
 {
     if(e->button() == Qt::RightButton) {
         auto stopColor = findStopHandleForEvent(e);
-        for(int index = 0; index < _gradient.size(); index++)
-            if(_gradient.at(index) == *stopColor)
-                chooseColorAtPosition(index, stopColor->color);
+        if(stopColor){
+            for(int index = 0; index < _gradient.size(); index++)
+                if(_gradient.at(index) == *stopColor)
+                    chooseColorAtPosition(index, stopColor->color);
+        }
     } else {
         auto stopColor = findStopHandleForEvent(e, endStops);
         if(stopColor){
