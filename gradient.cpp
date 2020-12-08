@@ -43,6 +43,7 @@ void Gradient::addStop(const StopColor &stopColor)
             break;
     }
     _gradient.insert(index, stopColor);
+    sortGradient(_gradient);
     emit gradientChanged(_gradient);
 }
 
@@ -72,6 +73,7 @@ void Gradient::chooseColorAtPosition(int position, QColor color)
         else
             return;
     }
+
     setColorAtPosition(position, color);
 }
 
@@ -89,10 +91,10 @@ void Gradient::sortGradient(QVector<StopColor> &gradient)
 
 void Gradient::updateEndStops()
 {
+    endStops.clear();
+    sortGradient(_gradient);
     if(!_gradient.isEmpty())
         endStops = {_gradient.first(), _gradient.last()};
-    else
-        endStops.clear();
 }
 
 StopColor *Gradient::findStopHandleForEvent(QMouseEvent *e, QVector<StopColor> toExclude)
@@ -151,11 +153,14 @@ QSize Gradient::sizeHint() const
 
 void Gradient::mousePressEvent(QMouseEvent *e)
 {
-    auto stopColor = findStopHandleForEvent(e, endStops);
-    if(stopColor){
-        if(e->button() == Qt::RightButton){
-            chooseColorAtPosition(stopColor->stop, stopColor->color);
-        } else {
+    if(e->button() == Qt::RightButton) {
+        auto stopColor = findStopHandleForEvent(e);
+        for(int index = 0; index < _gradient.size(); index++)
+            if(_gradient.at(index) == *stopColor)
+                chooseColorAtPosition(index, stopColor->color);
+    } else {
+        auto stopColor = findStopHandleForEvent(e, endStops);
+        if(stopColor){
             dragStopColor = stopColor;
         }
     }
