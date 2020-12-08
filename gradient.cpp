@@ -8,6 +8,8 @@ Gradient::Gradient(QWidget *parent) : QWidget(parent),_gradient{{0.0, Qt::white}
 {
     setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     connect(this, &Gradient::gradientChanged, this, QOverload<>::of(&Gradient::update));
+    connect(this, &Gradient::gradientChanged, this, &Gradient::updateEndStops);
+
 }
 
 Gradient::Gradient(const QVector<StopColor> gradient, QWidget *parent)
@@ -16,6 +18,7 @@ Gradient::Gradient(const QVector<StopColor> gradient, QWidget *parent)
     setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
     connect(this, &Gradient::gradientChanged, this, QOverload<>::of(&Gradient::update));
+    connect(this, &Gradient::gradientChanged, this, &Gradient::updateEndStops);
 }
 
 void Gradient::setGradient(QVector<StopColor> gradient)
@@ -45,7 +48,8 @@ void Gradient::addStop(const StopColor &stopColor)
 
 void Gradient::removeStopAtPosition(int position)
 {
-    if(position >= 0 && position < _gradient.size()){
+    //End stops can not be removed
+    if(position > 0 && position < _gradient.size() -1){
         _gradient.removeAt(position);
         gradientChanged(_gradient);
     }
@@ -81,6 +85,14 @@ void Gradient::constrainGradient(QVector<StopColor> &gradient)
 void Gradient::sortGradient(QVector<StopColor> &gradient)
 {
     std::sort(gradient.begin(), gradient.end(), [](const StopColor &a, const StopColor &b)->bool {return  a.stop < b.stop;});
+}
+
+void Gradient::updateEndStops()
+{
+    if(!_gradient.isEmpty())
+        endStops = {_gradient.first(), _gradient.last()};
+    else
+        endStops.clear();
 }
 
 StopColor *Gradient::findStopHandleForEvent(QMouseEvent *e, QVector<StopColor> toExclude)
@@ -139,7 +151,7 @@ QSize Gradient::sizeHint() const
 
 void Gradient::mousePressEvent(QMouseEvent *e)
 {
-    auto stopColor = findStopHandleForEvent(e);
+    auto stopColor = findStopHandleForEvent(e, endStops);
     if(stopColor){
         if(e->button() == Qt::RightButton){
             chooseColorAtPosition(stopColor->stop, stopColor->color);
