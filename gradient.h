@@ -28,7 +28,7 @@ public:
     explicit Gradient(QWidget *parent = nullptr);
     explicit Gradient(const QVector<StopColor> gradient, QWidget *parent = nullptr);
 
-    [[nodiscard]] const inline QVector<StopColor> &gradient() const noexcept {return _gradient;}
+    const inline QVector<StopColor> &gradient() const noexcept {return _gradient;}
 
 public slots:
     void setGradient(QVector<StopColor> gradient);
@@ -63,8 +63,8 @@ private:
 
     QVector<StopColor> endStops;
 
-    int _handle_w{10};
-    int _handle_h{10};
+    int _handle_w{50};
+    int _handle_h{50};
     QPoint _drag_position;
 };
 
